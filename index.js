@@ -1,27 +1,30 @@
 const express = require('express');
 const path = require('path')
+const { v4: uuid } = require("uuid");
+ uuid();
 const app = express();
+
 
 const PORT = 3000;
 
 const comments = [
   {
-    id: 1,
+    id: uuid(),
     username: "kaytee",
     comment: "lol this is crazy",
   },
   {
-    id: 2,
+    id: uuid(),
     username: "todie",
     comment: "i dont like this",
   },
   {
-    id: 3,
+    id: uuid(),
     username: "ebo",
     comment: "what is happening here",
   },
   {
-    id: 4,
+    id: uuid(),
     username: "lodi",
     comment: "this is against laews",
   },
@@ -41,7 +44,7 @@ app.get('/comment',(req, res)=>{
 app.post('/comment',(req, res)=>{
     const {username, comment} = req.body;
     console.log(req.body, comment)
-    comments.push({username, comment})
+    comments.push({username, comment, id:uuid()})
     res.redirect('/comment');
 })
 
@@ -53,9 +56,19 @@ app.get('/tacos', (req, res)=>{
     res.send('GET /tacos response')
 })
 
-app.get('/comment/:id',(req, res)=>{
+app.patch('/comment/:id',(req, res)=>{
     const { id } = req.params;
-    const comment = comments.find(comm=> comm.id === parseInt(id));
+    const editComment = req.body.comment;
+    const foundcomment = comments.find((comm) => comm.id == id);
+    console.log(foundcomment)
+    foundcomment.comment = editComment;
+    res.redirect('/comment')
+})
+
+app.get('/comment/:id',(req, res)=>{
+    const { id } = req.params
+    const comment = comments.find(comm=> comm.id == id);
+
     res.render('comment/details', {comment})
 })
 
